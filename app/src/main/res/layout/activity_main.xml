@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="30dp"
+    tools:context=".view.MainActivity">
+
+    <Button
+        android:id="@+id/btnNV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quản lý nhân viên"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp" />
+
+    <Button
+        android:id="@+id/btnVT"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quản lý vị trí"
+        android:textStyle="bold" />
+
+</LinearLayout>
