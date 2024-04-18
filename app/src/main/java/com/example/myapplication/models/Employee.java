@@ -5,7 +5,7 @@ public class Employee {
     private String name;
     private String doB;
     private String homeTown;
-    private Position position;
+    private int position_id;
 
     public int getId() {
         return id;
@@ -39,11 +39,11 @@ public class Employee {
         this.homeTown = homeTown;
     }
 
-    public Position getPosition() {
-        return position;
+    public int getPosition_id() {
+        return position_id;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void setPosition_id(int position_id) {
+        this.position_id = position_id;
     }
 }
