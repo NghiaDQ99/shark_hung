@@ -10,6 +10,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.models.Employee;
+import com.example.myapplication.models.Position;
+
+import java.util.ArrayList;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private Context context;
@@ -37,17 +42,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_DOB + " TEXT, " +
                 COLUMN_HOMETOWN + " TEXT, " +
-                COLUMN_POSITION + " INTEGER" +
-                COLUMN_SALARY + "FLOAT);";
+                COLUMN_POSITION + " INTEGER);";
         String query1 = "CREATE TABLE " + TABLE_POSITION +
                 " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_NAME + " TEXT, " +
-                COLUMN_SALARY + "FLOAT);";
+                COLUMN_SALARY + " FLOAT);";
         sqLiteDatabase.execSQL(query);
         sqLiteDatabase.execSQL(query1);
     }
 
-    void addEmployee(String name, String dob, String hometown, int positionId) {
+    public void addEmployee(String name, String dob, String hometown, int positionId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -63,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void addPosition(String name, float salary) {
+    public void addPosition(String name, float salary) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 
@@ -84,6 +88,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(query);
         sqLiteDatabase.execSQL(query1);
         onCreate(sqLiteDatabase);
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<Employee> getAllEmployees() {
+        ArrayList<Employee> employeeList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_EMPLOYEE;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int employeeId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                String employeeName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                int positionId = cursor.getInt(cursor.getColumnIndex(COLUMN_POSITION));
+                String dob = cursor.getString(cursor.getColumnIndex(COLUMN_DOB));
+                String hometown = cursor.getString(cursor.getColumnIndex(COLUMN_HOMETOWN));
+                Employee employee = new Employee(employeeId, employeeName, dob, hometown, positionId);
+                employeeList.add(employee);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return employeeList;
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<Position> getAllPosition() {
+        ArrayList<Position> positionList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_POSITION;
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int positionId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                float salary = cursor.getFloat(cursor.getColumnIndex(COLUMN_SALARY));
+                Position position = new Position(positionId, name, salary);
+                positionList.add(position);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return positionList;
     }
 
     Cursor readAllEmployee() {
@@ -107,7 +151,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return cursor;
     }
-
 
     void updateEmployee(int id, String name, String dob, String homeTown, int positionId) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -136,7 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void updateData(int id, String name, float salary) {
+    void updatePosition(int id, String name, float salary) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME, name);
@@ -151,9 +194,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    void deleteOneRow(String id) {
+    void deletePosition(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.delete(TABLE_EMPLOYEE, "_id=?", new String[]{id});
+        long result = db.delete(TABLE_POSITION, "_id=?", new String[]{id});
         if (result == -1) {
             Toast.makeText(context, "Failed to Delete.", Toast.LENGTH_SHORT).show();
         } else {
@@ -173,7 +216,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             positionName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
         }
         cursor.close();
-        return positionName;
+        return positionName != null ? positionName : "Chưa có";
     }
 
     @SuppressLint("Range")

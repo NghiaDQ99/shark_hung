@@ -7,6 +7,14 @@ public class Employee {
     private String homeTown;
     private int position_id;
 
+    public Employee(int id, String name, String doB, String homeTown, int position_id) {
+        this.id = id;
+        this.name = name;
+        this.doB = doB;
+        this.homeTown = homeTown;
+        this.position_id = position_id;
+    }
+
     public int getId() {
         return id;
     }

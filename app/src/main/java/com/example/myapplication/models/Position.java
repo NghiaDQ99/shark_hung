@@ -9,6 +9,12 @@ public class Position {
         return id;
     }
 
+    public Position(int id, String name, float salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

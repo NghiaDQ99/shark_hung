@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.databinding.ItemEmployeePositionBinding;
+import com.example.myapplication.db.DatabaseHelper;
 import com.example.myapplication.models.Employee;
 import com.example.myapplication.models.Position;
 import com.example.myapplication.view.ListActivity;
@@ -18,10 +19,12 @@ import java.util.ArrayList;
 public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositionAdapter.EmployeePostionViewHolder>{
     private ArrayList<Employee> listEmployee;
     private ArrayList<Position> listPosition;
-    private ListActivity listActivity;
+    private final ListActivity listActivity;
+    private final DatabaseHelper db;
 
     public EmployeePositionAdapter(ListActivity listActivity) {
         this.listActivity = listActivity;
+        db = new DatabaseHelper(listActivity);
     }
 
     public void setListEmployee(ArrayList<Employee> listEmployee) {
@@ -51,8 +54,8 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
             holder.binding.tvName.setText("Tên: " + item.getName());
             holder.binding.tvDoB.setText("Ngày sinh: " + item.getDoB());
             holder.binding.tvHomeTown.setText("Quê quán: " + item.getHomeTown());
-            holder.binding.tvPosition.setText("Vị trí: " + item.getPosition().getName());
-            holder.binding.tvSalary.setText("Mức lương: " + item.getPosition().getSalary());
+            holder.binding.tvPosition.setText("Vị trí: " + db.getPositionNameByEmployee(item.getPosition_id()));
+            holder.binding.tvSalary.setText("Mức lương: " + db.getSalaryByEmployee(item.getPosition_id()) + " triệu vnđ");
         } else {
             Position item = listPosition.get(position);
 
@@ -61,7 +64,7 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
             holder.binding.tvHomeTown.setVisibility(View.GONE);
 
             holder.binding.tvName.setText("Tên: " + item.getName());
-            holder.binding.tvSalary.setText("Mức lương: " + item.getSalary());
+            holder.binding.tvSalary.setText("Mức lương: " + item.getSalary() + " triệu vnđ");
         }
     }
 
