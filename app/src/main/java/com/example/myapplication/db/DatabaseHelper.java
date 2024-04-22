@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_EMPLOYEE = "tbl_employee";
     private static final String TABLE_POSITION = "tbl_position";
     private static final String COLUMN_ID = "_id";
+    private static final String COLUMN_ID_POSITION = "p_id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_DOB = "dob";
     private static final String COLUMN_HOMETOWN = "hometown";
@@ -44,11 +45,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_HOMETOWN + " TEXT, " +
                 COLUMN_POSITION + " INTEGER);";
         String query1 = "CREATE TABLE " + TABLE_POSITION +
-                " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                " (" + COLUMN_ID_POSITION + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_NAME + " TEXT, " +
                 COLUMN_SALARY + " FLOAT);";
         sqLiteDatabase.execSQL(query);
         sqLiteDatabase.execSQL(query1);
+    }
+
+    @SuppressLint("Range")
+    public Employee getEmployeeById(int employeeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_EMPLOYEE + " WHERE " + COLUMN_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(employeeId)});
+        Employee employee = null;
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            String dob = cursor.getString(cursor.getColumnIndex(COLUMN_DOB));
+            String homeTown = cursor.getString(cursor.getColumnIndex(COLUMN_HOMETOWN));
+            int positionId = cursor.getInt(cursor.getColumnIndex(COLUMN_POSITION));
+            employee = new Employee(id, name, dob, homeTown, positionId);
+        }
+        cursor.close();
+        return employee;
+    }
+
+    @SuppressLint("Range")
+    public Position getPositionById(int employeeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_POSITION + " WHERE " + COLUMN_ID_POSITION + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(employeeId)});
+        Position position = null;
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_POSITION));
+            String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+            float salary = cursor.getFloat(cursor.getColumnIndex(COLUMN_SALARY));
+            position = new Position(id, name, salary);
+        }
+        cursor.close();
+        return position;
     }
 
     public void addEmployee(String name, String dob, String hometown, int positionId) {
@@ -119,7 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
         if (cursor.moveToFirst()) {
             do {
-                int positionId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                int positionId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_POSITION));
                 String name = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
                 float salary = cursor.getFloat(cursor.getColumnIndex(COLUMN_SALARY));
                 Position position = new Position(positionId, name, salary);
@@ -130,29 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return positionList;
     }
 
-    Cursor readAllEmployee() {
-        String query = "SELECT * FROM " + TABLE_EMPLOYEE;
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
-    }
-
-    Cursor readAllPosition() {
-        String query = "SELECT * FROM " + TABLE_POSITION;
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = db.rawQuery(query, null);
-        }
-        return cursor;
-    }
-
-    void updateEmployee(int id, String name, String dob, String homeTown, int positionId) {
+    public void updateEmployee(int id, String name, String dob, String homeTown, int positionId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME, name);
@@ -160,7 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put(COLUMN_HOMETOWN, homeTown);
         cv.put(COLUMN_POSITION, positionId);
 
-        long result = db.update(TABLE_EMPLOYEE, cv, "_id=?", new String[]{String.valueOf(id)});
+        long result = db.update(TABLE_EMPLOYEE, cv, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
         if (result == -1) {
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         } else {
@@ -169,9 +182,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    void deleteEmployee(int id) {
+    public void deleteEmployee(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.delete(TABLE_EMPLOYEE, "_id=?", new String[]{String.valueOf(id)});
+        long result = db.delete(TABLE_EMPLOYEE, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
         if (result == -1) {
             Toast.makeText(context, "Failed to Delete.", Toast.LENGTH_SHORT).show();
         } else {
@@ -179,13 +192,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    void updatePosition(int id, String name, float salary) {
+    public void updatePosition(int id, String name, float salary) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME, name);
         cv.put(COLUMN_SALARY, salary);
 
-        long result = db.update(TABLE_POSITION, cv, "_id=?", new String[]{String.valueOf(id)});
+        long result = db.update(TABLE_POSITION, cv, COLUMN_ID_POSITION + "=?", new String[]{String.valueOf(id)});
         if (result == -1) {
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         } else {
@@ -194,9 +207,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    void deletePosition(String id) {
+    public void deletePosition(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        long result = db.delete(TABLE_POSITION, "_id=?", new String[]{id});
+        long result = db.delete(TABLE_POSITION, COLUMN_ID_POSITION + "=?", new String[]{String.valueOf(id)});
         if (result == -1) {
             Toast.makeText(context, "Failed to Delete.", Toast.LENGTH_SHORT).show();
         } else {
@@ -208,7 +221,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String getPositionNameByEmployee(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT p." + COLUMN_NAME +
-                " FROM " + TABLE_EMPLOYEE + " e INNER JOIN " + TABLE_POSITION + " p ON e." + COLUMN_POSITION + " = p." + COLUMN_ID +
+                " FROM " + TABLE_EMPLOYEE + " e INNER JOIN " + TABLE_POSITION + " p ON e." + COLUMN_POSITION + " = p." + COLUMN_ID_POSITION +
                 " WHERE e." + COLUMN_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
         String positionName = null;
@@ -223,7 +236,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public float getSalaryByEmployee(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT p." + COLUMN_SALARY +
-                " FROM " + TABLE_EMPLOYEE + " e INNER JOIN " + TABLE_POSITION + " p ON e." + COLUMN_POSITION + " = p." + COLUMN_ID +
+                " FROM " + TABLE_EMPLOYEE + " e INNER JOIN " + TABLE_POSITION + " p ON e." + COLUMN_POSITION + " = p." + COLUMN_ID_POSITION +
                 " WHERE e." + COLUMN_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
         float positionName = 0;
@@ -232,5 +245,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return positionName;
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<Employee> filterEmployeesAboveSalary() {
+        ArrayList<Employee> filteredEmployees = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT e.*, p." + COLUMN_SALARY +
+                " FROM " + TABLE_EMPLOYEE + " e INNER JOIN " + TABLE_POSITION + " p ON e." + COLUMN_POSITION + " = p." + COLUMN_ID_POSITION +
+                " WHERE p." + COLUMN_SALARY + " > 10";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int employeeId = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+                String employeeName = cursor.getString(cursor.getColumnIndex(COLUMN_NAME));
+                int positionId = cursor.getInt(cursor.getColumnIndex(COLUMN_POSITION));
+                String dob = cursor.getString(cursor.getColumnIndex(COLUMN_DOB));
+                String hometown = cursor.getString(cursor.getColumnIndex(COLUMN_HOMETOWN));
+                Employee employee = new Employee(employeeId, employeeName, dob, hometown, positionId);
+                filteredEmployees.add(employee);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return filteredEmployees;
     }
 }

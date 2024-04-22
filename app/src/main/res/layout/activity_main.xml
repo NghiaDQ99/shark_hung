@@ -23,6 +23,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Quản lý vị trí"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp" />
+
+    <Button
+        android:id="@+id/btnNYHighSalary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Danh sách nhân viên lương trên 10 triệu"
         android:textStyle="bold" />
 
 </LinearLayout>

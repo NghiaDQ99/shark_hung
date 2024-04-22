@@ -1,6 +1,12 @@
 package com.example.myapplication.adapters;
 
+import static com.example.myapplication.view.AddOrUpdateActivity.ID;
+import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_SCREEN;
+import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_UPDATE_EMPLOYEE;
+import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_UPDATE_POSITION;
+
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +18,7 @@ import com.example.myapplication.databinding.ItemEmployeePositionBinding;
 import com.example.myapplication.db.DatabaseHelper;
 import com.example.myapplication.models.Employee;
 import com.example.myapplication.models.Position;
+import com.example.myapplication.view.AddOrUpdateActivity;
 import com.example.myapplication.view.ListActivity;
 
 import java.util.ArrayList;
@@ -41,7 +48,7 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
         return new EmployeePostionViewHolder(ItemEmployeePositionBinding.inflate(LayoutInflater.from(listActivity), parent, false));
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     @Override
     public void onBindViewHolder(@NonNull EmployeePostionViewHolder holder, int position) {
         if (listEmployee != null) {
@@ -54,8 +61,19 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
             holder.binding.tvName.setText("Tên: " + item.getName());
             holder.binding.tvDoB.setText("Ngày sinh: " + item.getDoB());
             holder.binding.tvHomeTown.setText("Quê quán: " + item.getHomeTown());
-            holder.binding.tvPosition.setText("Vị trí: " + db.getPositionNameByEmployee(item.getPosition_id()));
-            holder.binding.tvSalary.setText("Mức lương: " + db.getSalaryByEmployee(item.getPosition_id()) + " triệu vnđ");
+            holder.binding.tvPosition.setText("Vị trí: " + db.getPositionNameByEmployee(item.getId()));
+            holder.binding.tvSalary.setText("Mức lương: " + db.getSalaryByEmployee(item.getId()) + " triệu vnđ");
+            holder.binding.btnDelete.setOnClickListener(view -> {
+                db.deleteEmployee(item.getId());
+                listEmployee.remove(position);
+                notifyDataSetChanged();
+            });
+            holder.binding.btnEdit.setOnClickListener(view -> {
+                Intent intent = new Intent(listActivity, AddOrUpdateActivity.class);
+                intent.putExtra(TYPE_SCREEN, TYPE_UPDATE_EMPLOYEE);
+                intent.putExtra(ID, item.getId());
+                listActivity.startActivity(intent);
+            });
         } else {
             Position item = listPosition.get(position);
 
@@ -65,6 +83,17 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
 
             holder.binding.tvName.setText("Tên: " + item.getName());
             holder.binding.tvSalary.setText("Mức lương: " + item.getSalary() + " triệu vnđ");
+            holder.binding.btnDelete.setOnClickListener(view -> {
+                db.deletePosition(item.getId());
+                listPosition.remove(position);
+                notifyDataSetChanged();
+            });
+            holder.binding.btnEdit.setOnClickListener(view -> {
+                Intent intent = new Intent(listActivity, AddOrUpdateActivity.class);
+                intent.putExtra(TYPE_SCREEN, TYPE_UPDATE_POSITION);
+                intent.putExtra(ID, item.getId());
+                listActivity.startActivity(intent);
+            });
         }
     }
 
@@ -85,6 +114,4 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
             this.binding = binding;
         }
     }
-
-
 }

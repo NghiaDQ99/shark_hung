@@ -1,8 +1,15 @@
 package com.example.myapplication.view;
 
+import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_ADD_EMPLOYEE;
+import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_ADD_POSITION;
+import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_SCREEN;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.TintTypedArray;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -18,6 +25,7 @@ public class ListActivity extends AppCompatActivity {
 
     private ActivityListBinding binding;
     private boolean isListEmployee = false;
+    private boolean isHighSalary = false;
     private ArrayList<Employee> listEmployee;
     private ArrayList<Position> listPosition;
     private EmployeePositionAdapter adapter;
@@ -31,12 +39,22 @@ public class ListActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
         isListEmployee = getIntent().getBooleanExtra(MainActivity.IS_LIST_EMPLOYEE_FLAG, false);
+        isHighSalary = getIntent().getBooleanExtra(MainActivity.IS_HIGH_SALARY, false);
         initView();
     }
 
+    @SuppressLint("SetTextI18n")
     private void initView() {
         if (isListEmployee) {
-            listEmployee = db.getAllEmployees();
+            if (isHighSalary) {
+                binding.tvTitle.setText("Danh sách nhân viên lương cao");
+                listEmployee = db.filterEmployeesAboveSalary();
+                binding.btnAdd.setVisibility(View.GONE);
+            } else {
+                binding.tvTitle.setText("Danh sách nhân viên");
+                listEmployee = db.getAllEmployees();
+                binding.btnAdd.setVisibility(View.VISIBLE);
+            }
             binding.rcvEmployee.setVisibility(View.VISIBLE);
             binding.rcvPosition.setVisibility(View.GONE);
             adapter = new EmployeePositionAdapter(this);
@@ -44,6 +62,7 @@ public class ListActivity extends AppCompatActivity {
             binding.rcvEmployee.setLayoutManager(new LinearLayoutManager(this));
             binding.rcvEmployee.setAdapter(adapter);
         } else {
+            binding.tvTitle.setText("Danh sách vị trí");
             listPosition = db.getAllPosition();
             binding.rcvEmployee.setVisibility(View.GONE);
             binding.rcvPosition.setVisibility(View.VISIBLE);
@@ -52,5 +71,29 @@ public class ListActivity extends AppCompatActivity {
             binding.rcvPosition.setLayoutManager(new LinearLayoutManager(this));
             binding.rcvPosition.setAdapter(adapter);
         }
+        binding.btnAdd.setOnClickListener(view -> {
+            Intent intent = new Intent(ListActivity.this, AddOrUpdateActivity.class);
+            intent.putExtra(TYPE_SCREEN, isListEmployee ? TYPE_ADD_EMPLOYEE : TYPE_ADD_POSITION);
+            startActivity(intent);
+        });
+        binding.btnBack.setOnClickListener(view -> onBackPressed());
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isListEmployee) {
+            if (isHighSalary) {
+                listEmployee = db.filterEmployeesAboveSalary();
+            } else {
+                listEmployee = db.getAllEmployees();
+            }
+            adapter.setListEmployee(listEmployee);
+        } else {
+            listPosition = db.getAllPosition();
+            adapter.setListPosition(listPosition);
+        }
+        adapter.notifyDataSetChanged();
     }
 }

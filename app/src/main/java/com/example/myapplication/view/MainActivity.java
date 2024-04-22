@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     public static final String IS_LIST_EMPLOYEE_FLAG = "IS_LIST_EMPLOYEE_FLAG";
+    public static final String IS_HIGH_SALARY = "IS_HIGH_SALARY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +26,16 @@ public class MainActivity extends AppCompatActivity {
 
         binding.btnNV.setOnClickListener(view -> {
             intent.putExtra(IS_LIST_EMPLOYEE_FLAG, true);
+            intent.putExtra(IS_HIGH_SALARY, false);
             startActivity(intent);
         });
         binding.btnVT.setOnClickListener(view -> {
             intent.putExtra(IS_LIST_EMPLOYEE_FLAG, false);
+            startActivity(intent);
+        });
+        binding.btnNYHighSalary.setOnClickListener(view -> {
+            intent.putExtra(IS_LIST_EMPLOYEE_FLAG, true);
+            intent.putExtra(IS_HIGH_SALARY, true);
             startActivity(intent);
         });
     }
@@ -45,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (db.getAllPosition().size() == 0) {
             db.addPosition("Giám đốc", 50);
-            db.addPosition("Kế toán", 10);
+            db.addPosition("Kế toán", 11);
             db.addPosition("Nhân viên", 5);
         }
     }
