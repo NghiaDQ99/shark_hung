@@ -28,6 +28,7 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
     private ArrayList<Position> listPosition;
     private final ListActivity listActivity;
     private final DatabaseHelper db;
+    private int filteredPositionId = 0;
 
     public EmployeePositionAdapter(ListActivity listActivity) {
         this.listActivity = listActivity;
@@ -42,6 +43,12 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
         this.listPosition = listPosition;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    public void setFilteredPositionId(int id) {
+        this.filteredPositionId = id;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public EmployeePostionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,6 +60,14 @@ public class EmployeePositionAdapter extends RecyclerView.Adapter<EmployeePositi
     public void onBindViewHolder(@NonNull EmployeePostionViewHolder holder, int position) {
         if (listEmployee != null) {
             Employee item = listEmployee.get(position);
+
+            if (filteredPositionId == 0 || item.getPosition_id() == filteredPositionId) {
+                holder.itemView.setVisibility(View.VISIBLE);
+                holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            } else {
+                holder.itemView.setVisibility(View.GONE);
+                holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+            }
 
             holder.binding.tvPosition.setVisibility(View.VISIBLE);
             holder.binding.tvDoB.setVisibility(View.VISIBLE);

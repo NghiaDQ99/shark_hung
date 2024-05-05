@@ -5,15 +5,16 @@ import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_ADD_POSITI
 import static com.example.myapplication.view.AddOrUpdateActivity.TYPE_SCREEN;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.TintTypedArray;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.example.myapplication.adapters.EmployeePositionAdapter;
+import com.example.myapplication.adapters.PositionSpinnerAdapter;
 import com.example.myapplication.databinding.ActivityListBinding;
 import com.example.myapplication.db.DatabaseHelper;
 import com.example.myapplication.models.Employee;
@@ -50,10 +51,13 @@ public class ListActivity extends AppCompatActivity {
                 binding.tvTitle.setText("Danh sách nhân viên lương cao");
                 listEmployee = db.filterEmployeesAboveSalary();
                 binding.btnAdd.setVisibility(View.GONE);
+                binding.spnPosition.setVisibility(View.GONE);
             } else {
                 binding.tvTitle.setText("Danh sách nhân viên");
                 listEmployee = db.getAllEmployees();
                 binding.btnAdd.setVisibility(View.VISIBLE);
+                binding.spnPosition.setVisibility(View.VISIBLE);
+                setupPositionSpinner();
             }
             binding.rcvEmployee.setVisibility(View.VISIBLE);
             binding.rcvPosition.setVisibility(View.GONE);
@@ -66,6 +70,7 @@ public class ListActivity extends AppCompatActivity {
             listPosition = db.getAllPosition();
             binding.rcvEmployee.setVisibility(View.GONE);
             binding.rcvPosition.setVisibility(View.VISIBLE);
+            binding.spnPosition.setVisibility(View.GONE);
             adapter = new EmployeePositionAdapter(this);
             adapter.setListPosition(listPosition);
             binding.rcvPosition.setLayoutManager(new LinearLayoutManager(this));
@@ -77,6 +82,24 @@ public class ListActivity extends AppCompatActivity {
             startActivity(intent);
         });
         binding.btnBack.setOnClickListener(view -> onBackPressed());
+    }
+
+    private void setupPositionSpinner() {
+         ArrayList<Position> listPosition = db.getAllPosition();
+         listPosition.add(0, new Position(0, "Tất cả vị trí", 0));
+        PositionSpinnerAdapter spinnerAdapter = new PositionSpinnerAdapter(this, listPosition);
+        binding.spnPosition.setAdapter(spinnerAdapter);
+        binding.spnPosition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                adapter.setFilteredPositionId(((Position) adapterView.getItemAtPosition(i)).getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @SuppressLint("NotifyDataSetChanged")

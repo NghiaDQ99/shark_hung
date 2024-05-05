@@ -15,8 +15,8 @@ import com.example.myapplication.models.Position;
 import java.util.ArrayList;
 
 public class PositionSpinnerAdapter extends ArrayAdapter<Position> {
-    private ArrayList<Position> positions;
-    private Context mContext;
+    private final ArrayList<Position> positions;
+    private final Context mContext;
 
     public PositionSpinnerAdapter(Context context, ArrayList<Position> positions) {
         super(context, android.R.layout.simple_spinner_item, positions);
@@ -29,6 +29,7 @@ public class PositionSpinnerAdapter extends ArrayAdapter<Position> {
         return createItemView(position, convertView, parent);
     }
 
+    @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         return createItemView(position, convertView, parent);
