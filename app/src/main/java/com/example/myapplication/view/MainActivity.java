@@ -2,6 +2,7 @@ package com.example.myapplication.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,6 +14,13 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     public static final String IS_LIST_EMPLOYEE_FLAG = "IS_LIST_EMPLOYEE_FLAG";
     public static final String IS_HIGH_SALARY = "IS_HIGH_SALARY";
+
+    static {
+        System.loadLibrary("native-lib");
+    }
+
+    private native String getAESKey();
+    private native String getAESIv();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(IS_HIGH_SALARY, true);
             startActivity(intent);
         });
+        Log.d("MainActivity", "Chuỗi hằng số từ CMake: " + getAESKey());
+        Log.d("MainActivity", "Chuỗi hằng số từ CMake: " + getAESIv());
     }
 
     private void fakeDefaultData() {

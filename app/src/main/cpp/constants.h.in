@@ -1,0 +1,11 @@
+//
+// Created by Nghĩa Đinh on 15/9/24.
+//
+
+#ifndef MY_APPLICATION_CONSTANTS_H
+#define MY_APPLICATION_CONSTANTS_H
+
+#define AES_KEY="@AES_KEY@"
+#define AES_IV="@AES_IV@"
+
+#endif //MY_APPLICATION_CONSTANTS_H
